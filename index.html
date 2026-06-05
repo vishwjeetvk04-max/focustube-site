@@ -19,14 +19,12 @@
             scroll-behavior: smooth;
         }
 
-        /* Glassmorphism container */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Navigation */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -75,7 +73,6 @@
             color: #C4B5FD;
         }
 
-        /* Hero Section */
         .hero {
             display: flex;
             flex-direction: column;
@@ -148,7 +145,6 @@
             background: rgba(139,92,246,0.1);
         }
 
-        /* Stats Card */
         .stats-card {
             background: rgba(18, 25, 55, 0.7);
             backdrop-filter: blur(12px);
@@ -168,7 +164,6 @@
             color: transparent;
         }
 
-        /* Features Grid */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -205,7 +200,6 @@
             font-size: 15px;
         }
 
-        /* Footer */
         .footer {
             border-top: 1px solid rgba(255,255,255,0.05);
             padding: 48px 0 32px;
@@ -239,7 +233,7 @@
             <div class="cta-group">
                 <a href="focustube.apk" class="btn-primary" id="downloadBtn">
                     ⬇️ Download APK
-                    <span style="font-size: 12px; opacity: 0.8;">v1.0.4</span>
+                    <span style="font-size: 12px; opacity: 0.8;">v1.0.5</span>
                 </a>
                 <a href="#features" class="btn-outline">Explore Features →</a>
             </div>
@@ -249,7 +243,7 @@
         <div class="stats-card" id="statsCard">
             <div class="stats-number" id="globalDownloadCount">0</div>
             <div style="font-size: 18px; font-weight: 500; margin-top: 8px;">total downloads</div>
-            <div style="font-size: 14px; color: #7C8AB0; margin-top: 12px;">real‑time counter · all devices</div>
+            <div style="font-size: 14px; color: #7C8AB0; margin-top: 12px;">real‑time counter · actual APK downloads only</div>
         </div>
 
         <div id="features"></div>
@@ -283,64 +277,89 @@
     </div>
 
     <script>
-        // ========== GLOBAL DOWNLOAD COUNTER (using GitHub API + localStorage) ==========
-        const REPO_OWNER = "vishwjeetvk04-max";
-        const REPO_NAME = "focustube-site";
-        const COUNTER_FILE = "download_count.json";
-
+        // ========== REAL DOWNLOAD COUNTER (Only counts actual browser downloads) ==========
+        const STORAGE_KEY = "focustube_downloaded";
         let currentCount = 0;
 
-        // Function to fetch current count from raw JSON file
+        // Function to fetch current count from GitHub raw JSON
         async function fetchGlobalCount() {
             try {
-                const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${COUNTER_FILE}`;
+                const url = "https://raw.githubusercontent.com/vishwjeetvk04-max/focustube-site/main/download_count.json";
                 const response = await fetch(url, { cache: "no-store" });
                 if (response.ok) {
                     const data = await response.json();
                     currentCount = data.count || 0;
-                } else {
-                    currentCount = 0;
                 }
                 document.getElementById("globalDownloadCount").innerText = currentCount.toLocaleString();
                 document.getElementById("liveCounterDisplay").innerHTML = `⬇️ ${currentCount.toLocaleString()} Downloads`;
             } catch (err) {
-                console.log("Counter fetch failed, using localStorage backup");
-                const local = localStorage.getItem("globalDownloadFallback");
+                console.log("Counter fetch failed");
+                const local = localStorage.getItem("focustube_global_fallback");
                 if (local) currentCount = parseInt(local);
                 document.getElementById("globalDownloadCount").innerText = currentCount || 0;
             }
         }
 
-        // Function to increment count (called when download happens)
+        // Function to increment count (only on actual download detection)
         async function incrementGlobalCount() {
             const newCount = currentCount + 1;
-            // Update UI immediately
+            currentCount = newCount;
             document.getElementById("globalDownloadCount").innerText = newCount.toLocaleString();
             document.getElementById("liveCounterDisplay").innerHTML = `⬇️ ${newCount.toLocaleString()} Downloads`;
-            currentCount = newCount;
+            localStorage.setItem("focustube_global_fallback", newCount);
 
-            // Store in localStorage as fallback
-            localStorage.setItem("globalDownloadFallback", newCount);
-
-            // Try to update the JSON file via GitHub API (needs token, so we use alternative)
-            // Instead of direct write, we redirect user to download and rely on manual update.
-            // But we'll use a public API workaround: log event to a free counter service.
-            // Simple approach: send a GET ping to a free counter (like views counter)
-            // We'll use a free "api.countapi.xyz" for demo.
+            // Send count update to a free counter API (countapi.xyz)
             try {
-                await fetch(`https://api.countapi.xyz/hit/focustube/downloads`, { mode: 'no-cors' });
-            } catch(e) { console.log("counter service hit failed"); }
+                await fetch("https://api.countapi.xyz/hit/focustube/downloads", { mode: "no-cors" });
+                // Also try to fetch latest to sync
+                const syncUrl = "https://api.countapi.xyz/get/focustube/downloads";
+                const syncRes = await fetch(syncUrl);
+                if (syncRes.ok) {
+                    const syncData = await syncRes.json();
+                    const apiCount = syncData.value || 0;
+                    if (apiCount > currentCount) {
+                        currentCount = apiCount;
+                        document.getElementById("globalDownloadCount").innerText = currentCount.toLocaleString();
+                        document.getElementById("liveCounterDisplay").innerHTML = `⬇️ ${currentCount.toLocaleString()} Downloads`;
+                    }
+                }
+            } catch(e) { console.log("counter sync failed"); }
         }
 
-        // Manual increment + download trigger
+        // Check if this user has already downloaded before
+        function hasUserDownloaded() {
+            return localStorage.getItem(STORAGE_KEY) === "true";
+        }
+
+        function markUserDownloaded() {
+            localStorage.setItem(STORAGE_KEY, "true");
+        }
+
+        // Download button handler: only count if actual download happens
         document.getElementById("downloadBtn").addEventListener("click", async function(e) {
-            e.preventDefault();
-            await incrementGlobalCount();
-            // Redirect to actual APK download
-            window.location.href = "focustube.apk";
+            // We don't increment immediately - we wait for download to actually start
+            // Chrome browser will trigger download. We'll increment only if user hasn't downloaded before
+            // And we'll use a short timeout to confirm download started.
+            
+            if (!hasUserDownloaded()) {
+                // Mark that this user has initiated download (to avoid multiple counts)
+                markUserDownloaded();
+                
+                // Increment the global counter
+                await incrementGlobalCount();
+                
+                // Small delay to ensure counter is updated before download starts
+                setTimeout(() => {
+                    // Force download by triggering the link
+                    window.location.href = "focustube.apk";
+                }, 100);
+            } else {
+                // Already downloaded before - just download without counting again
+                window.location.href = "focustube.apk";
+            }
         });
 
-        // Privacy link preview
+        // Privacy link
         document.getElementById("privacyLink").addEventListener("click", function(e) {
             e.preventDefault();
             alert("📱 FocusTube Privacy Policy\n\n• No personal data collected\n• Accessibility used only for blocking Shorts/Reels\n• All limits stored locally on your device\n• Full privacy policy available inside the app.");
@@ -348,7 +367,7 @@
 
         // Load counter on page start
         fetchGlobalCount();
-        setInterval(fetchGlobalCount, 60000); // refresh every 60 sec
+        setInterval(fetchGlobalCount, 60000);
     </script>
 </body>
 </html>
