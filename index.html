@@ -1,53 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <link href="index.css" rel="stylesheet" />
-    <title>miniapp</title>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
-    />
+<head>
+    <title>FocusTube - टाइमर ऐप</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: rgba(255,255,255,0.2);
+            padding: 30px;
+            border-radius: 20px;
+        }
+        button {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            margin: 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #764ba2;
+            font-weight: bold;
+        }
+        #timer {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 30px 0;
+            background: black;
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 20px;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 30px;
+            background: #ff5722;
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 FocusTube</h1>
+        <h2>टाइमर के साथ फोकस करें</h2>
+        <div id="timer">25:00</div>
+        <div>
+            <button onclick="startTimer()">शुरू करें</button>
+            <button onclick="resetTimer()">रीसेट</button>
+        </div>
+        <br>
+        <a href="app-release-signed.apk">📱 एंड्रॉयड ऐप डाउनलोड करें</a>
+        <p>— 25 मिनट काम करें, 5 मिनट ब्रेक लें —</p>
+    </div>
+
     <script>
-      function formatQuery() {
-        var url = window.location.href;
-        var index = url.lastIndexOf('?');
-        var queryMap = {};
-        if (index > -1) {
-          var queryStr = url.slice(index + 1);
-          var queryList = queryStr.split('&');
-          for (var i = 0; i < queryList.length; i++) {
-            var value = queryList[i];
-            var item = value.split('=');
-            var key = item[0] || '';
-            var val = decodeURIComponent(item[1] || '');
-            queryMap[key] = val;
-          }
+        let timeLeft = 25 * 60;
+        let timerId = null;
+
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = 
+                `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
         }
-        return queryMap;
-      }
-      var queryMap = formatQuery();
-      document.documentElement.style.backgroundColor = queryMap.bgColor;
-      if (queryMap._transsion_dlt_miniapp_dark_theme_is_enabled == 1) {
-        var classVal = document.documentElement.getAttribute('class');
-        if (!classVal) {
-          classVal = 'dlt-dark__mode';
-        } else {
-          classVal = classVal.concat(' dlt-dark__mode');
+
+        function startTimer() {
+            if (timerId !== null) return;
+            timerId = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    timerId = null;
+                    alert("समय पूरा हुआ! ब्रेक लीजिए।");
+                } else {
+                    timeLeft--;
+                    updateDisplay();
+                }
+            }, 1000);
         }
-        document.documentElement.setAttribute('class', classVal);
-      }
-      (function (global) {
-        global.feRenderPreloadStart = Date.now();
-      })(window);
+
+        function resetTimer() {
+            if (timerId !== null) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+            timeLeft = 25 * 60;
+            updateDisplay();
+        }
+
+        updateDisplay();
     </script>
-  </head>
-  <body>
-    <script type="text/javascript" src="render.js"></script>
-    <script type="text/javascript">
-      (function (global) {
-        global.feSlavePreloadEnd = Date.now();
-      })(window);
-    </script>
-  </body>
+</body>
 </html>
