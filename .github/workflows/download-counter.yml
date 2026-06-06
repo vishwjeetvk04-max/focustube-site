@@ -1,0 +1,34 @@
+name: Download Counter
+
+on:
+  push:
+    paths:
+      - 'app-release-signed.apk'
+  workflow_dispatch:
+
+jobs:
+  update-counter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update download counter
+        run: |
+          COUNTER_FILE="download_count.json"
+          if [ -f "$COUNTER_FILE" ]; then
+            COUNT=$(cat $COUNTER_FILE | jq '.count')
+            NEW_COUNT=$((COUNT + 1))
+          else
+            NEW_COUNT=1
+          fi
+          echo "{\"count\": $NEW_COUNT}" > $COUNTER_FILE
+          echo "✅ Download count updated to: $NEW_COUNT"
+
+      - name: Commit counter file
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📊 Increment download counter"
+          file_pattern: "download_count.json"
