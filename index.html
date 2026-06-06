@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="FocusTube — Take control of YouTube Shorts, Instagram Reels & Facebook Reels">
+    <meta name="keywords" content="FocusTube, YouTube Shorts blocker, Instagram Reels limit, Facebook Reels blocker">
+    <meta name="author" content="Vishwjeet Kumar">
+    <title>FocusTube — Digital Wellbeing App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0A0F1E, #05080f);
+            color: #FFFFFF;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #C084FC, #8B5CF6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #C0C8E0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #A78BFA;
+        }
+
+        .counter-badge {
+            background: rgba(139, 92, 246, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid rgba(139, 92, 246, 0.5);
+            color: #C4B5FD;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0 50px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #E0D0FF, #A855F7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #A0A8C8;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .badge-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.05);
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            color: #B0B8D0;
+        }
+
+        /* Download Button */
+        .btn-primary {
+            background: linear-gradient(105deg, #8B5CF6, #5B21B6);
+            padding: 16px 48px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #8B5CF6;
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #C4B5FD;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: #A78BFA;
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: rgba(18, 25, 55, 0.65);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        .stats-number {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(145deg, #FFFFFF, #C084FC);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Features Grid */
+        .section-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            margin: 50px 0 30px;
+            background: linear-gradient(135deg, #F0F0FF, #A78BFA);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 28px;
+            margin: 30px 0 50px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 28px;
+            padding: 28px 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #8B5CF6;
+            transform: translateY(-6px);
+            background: rgba(139, 92, 246, 0.07);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #A8B0CC;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 40px 0 30px;
+            text-align: center;
+            color: #7A84A8;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 15px; }
+            .stats-number { font-size: 44px; }
+            .navbar { flex-direction: column; }
+            .btn-primary { padding: 12px 32px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <span class="logo">◉ FOCUSTUBE</span>
+            <div class="nav-links">
+                <a href="#">Home</a>
+                <a href="#features">Features</a>
+                <a href="#" id="privacyLink">Privacy</a>
+                <span class="counter-badge" id="downloadCounterDisplay">⬇️ 0 Downloads</span>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="badge-group">
+                <span class="badge">📱 Android 8+</span>
+                <span class="badge">🔐 Privacy First</span>
+                <span class="badge">⚡ Free</span>
+            </div>
+            <h1>Stop scrolling.<br>Start living.</h1>
+            <p>FocusTube helps you limit YouTube Shorts, Instagram Reels & Facebook Reels — without blocking essential content.</p>
+            <a href="app-release-signed.apk" class="btn-primary" id="downloadBtn">
+                ⬇️ Download APK <span style="font-size: 12px;">v1.0.5</span>
+            </a>
+            <div>
+                <a href="#features" class="btn-outline">✨ Explore Features</a>
+            </div>
+        </div>
+
+        <!-- Download Stats -->
+        <div class="stats-card">
+            <div class="stats-number" id="globalDownloadCount">0</div>
+            <div style="font-size: 17px; font-weight: 500;">total downloads</div>
+            <div style="font-size: 12px; color: #A0A8C0; margin-top: 10px;">✓ Real count | Updated when APK is uploaded</div>
+        </div>
+
+        <!-- Features Section -->
+        <div id="features"></div>
+        <div class="section-title">✨ Features that empower you</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📺</div>
+                <div class="feature-title">YouTube Shorts</div>
+                <div class="feature-desc">Daily watch limit — count based. 0 = unlimited. Only blocks Shorts.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <div class="feature-title">Instagram Reels</div>
+                <div class="feature-desc">Time‑based limits for Instagram & Instagram Lite.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📘</div>
+                <div class="feature-title">Facebook Reels</div>
+                <div class="feature-desc">Set daily time limits for Facebook & Facebook Lite.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌙</div>
+                <div class="feature-title">Dark / Light Theme</div>
+                <div class="feature-desc">System‑aware theme toggle. Gentle on eyes.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">100% Private</div>
+                <div class="feature-desc">All data stored locally. No tracking, no servers.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-title">Daily Auto Reset</div>
+                <div class="feature-desc">Limits reset daily at midnight. You stay in control.</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 FocusTube — Designed for digital wellbeing</p>
+            <p style="margin-top: 10px;">📍 Open source · No data collection · Accessibility only for blocking</p>
+        </div>
+    </div>
+
+    <script>
+        // ✅ REAL DOWNLOAD COUNT: Only fetches from backend (no click increment)
+        async function fetchDownloadCount() {
+            try {
+                const response = await fetch('download_count.json?t=' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data.count || 0;
+                    document.getElementById('globalDownloadCount').innerText = count.toLocaleString();
+                    document.getElementById('downloadCounterDisplay').innerHTML = `⬇️ ${count.toLocaleString()} Downloads`;
+                }
+            } catch(e) {
+                console.log('Counter fetch failed');
+            }
+        }
+
+        // ❌ NO CLICK COUNT - Button just redirects to APK
+        // ✅ Count is updated by GitHub Actions when APK is pushed
+
+        // Privacy info
+        document.getElementById('privacyLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('📱 FocusTube Privacy Policy\n\n• No personal information collected\n• Accessibility Service used only for blocking Shorts/Reels\n• All limits and usage data stored locally\n• No data shared with third parties');
+        });
+
+        // Load counter on page open
+        fetchDownloadCount();
+        // Refresh counter every 60 seconds
+        setInterval(fetchDownloadCount, 60000);
+    </script>
+</body>
+</html>
